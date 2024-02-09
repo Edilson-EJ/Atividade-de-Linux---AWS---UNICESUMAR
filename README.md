@@ -1,6 +1,38 @@
 
 # Atividade de Linux - AWS - UNICESUMAR
 
+# Descrição da atividade
+
+# Requisitos AWS
+
+    - Gerar uma chave pública para acesso ao ambiente;
+
+    -  Criar 1 instância EC2 com o sistema operacional Amazon Linux 2 (Família
+            t3.small, 16 GB SSD);
+    -  Gerar 1 elastic IP e anexar à instância EC2;
+
+    -  Liberar as portas de comunicação para acesso público: (22/TCP, 111/TCP e
+        UDP, 2049/TCP/UDP, 80/TCP, 443/TCP).
+
+# Requisitos LINUX
+
+    - Configurar o NFS entregue;
+
+    - Criar um diretorio dentro do filesystem do NFS com seu nome;
+
+    - Subir um apache no servidor - o apache deve estar online e rodando;
+
+    - Criar um script que valide se o serviço esta online e envie o resultado da
+        validação para o seu diretorio no nfs;
+
+    - O script deve conter - Data HORA + nome do serviço + Status + mensagem
+        personalizada de ONLINE ou offline;
+
+    - O script deve gerar 2 arquivos de saida: 1 para o serviço online e 1 para o
+        serviço OFFLINE;
+
+    -  Preparar a execução automatizada do script a cada 5 minutos.
+
 # AWS
 - Gerar uma chave pública para acesso ao ambiente:
 
@@ -107,6 +139,10 @@ UDP, 2049/TCP/UDP, 80/TCP, 443/TCP):
 
     7: Após adicionar todas as regras necessárias, clique no botão "Save rules" para aplicar as alterações.
 
+    8: launch_wizard-2
+
+    8.1: 7 entradas de permissão
+
 # Linux
 
 - Configurar o NFS entregue:
@@ -147,11 +183,36 @@ UDP, 2049/TCP/UDP, 80/TCP, 443/TCP):
 
     2: Use o comando mkdir para criar o diretório dentro do diretório exportado. Por exemplo, se o diretório exportado for /var/nfs, e seu nome for "usuario1", você pode criar um diretório com o seu nome usando o seguinte comando:
 
-    2.1 : sudo mkdir /var/nfs/usuario1
+    2.1 : sudo mkdir /nfs/edilson
 
     3: Verifique se o diretório foi criado com sucesso:
 
-    3.1: ls -l /var/nfs
+    3.1: ls -l /nfs/edilson
+
+    4: Configure as permissões do diretório:
+
+    4.1: sudo chmod -R 777 /nfs/edilson
+
+    5: Configure o arquivo /etc/exports:
+
+    5.1: como acessa o  /etc/exports:
+
+    5.1.1: sudo nano /etc/exports
+
+    5.2: Edite o arquivo /etc/exports para especificar quais diretórios serão compartilhados e quais hosts podem acessá-los. Adicione uma linha para cada diretório compartilhado. Por exemplo, para compartilhar /nfs/share com acesso de leitura e gravação para todos os hosts na rede, você pode adicionar a seguinte linha:
+
+    5.3: /nfs/edilson *(rw,sync,no_root_squash)
+
+    5.4: Para salvar e sair do editor de texto, dependendo do editor que você está usando, você precisa seguir diferentes passos:
+
+    5.4.1: Pressione Ctrl + O para escrever as alterações no arquivo.
+            Pressione Enter para confirmar o nome do arquivo.
+            Pressione Ctrl + X para sair do editor.
+    
+    6: Depois de adicionar essa linha (ou linhas) ao arquivo /etc/exports, salve o arquivo e reinicie o serviço NFS para aplicar as alterações. Você pode reiniciar o serviço com o seguinte comando:
+
+    6.1: sudo systemctl restart nfs-kernel-server
+
 
 - Subir um apache no servidor - o apache deve estar online e rodando:
 
@@ -204,6 +265,18 @@ validação para o seu diretorio no nfs:
 
     6: Exiba uma mensagem indicando que o resultado foi enviado com sucesso
     echo "Resultado da validação do Apache enviado para $NFS_DIR/$RESULT_FILE"
+
+- NFS_SERVER="endereco_do_servidor_nfs":
+
+    1: Para encontrar o endereço do servidor NFS, você pode usar o comando ifconfig ou ip addr no terminal do servidor Linux onde o NFS está configurado. Isso mostrará os detalhes de rede, incluindo o endereço IP do servidor.
+
+    2: A entrada "inet 10.0.2.15/24" indica que o endereço IP do servidor NFS é 10.0.2.15 e está em uma rede com uma máscara de sub-rede /24 (ou seja, uma máscara de sub-rede de 255.255.255.0).
+
+- NFS_DIR="/caminho/para/seu/diretorio_nfs":
+
+    1: Substituir pelo diretório onde está o arquivo.
+
+    1.1: /nfs/edilson
 
 - O script deve conter - Data HORA + nome do serviço + Status + mensagem
 personalizada de ONLINE ou offline:
